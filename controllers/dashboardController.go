@@ -1,10 +1,15 @@
 package controllers
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"DB-DB/database"
+	"DB-DB/models"
+	"github.com/gofiber/fiber/v2"
+)
 
 func GetDashboard(c *fiber.Ctx) error {
-	return c.JSON(fiber.Map{
-		"hello":  "world",
-		"server": c.Hostname(),
-	})
+	var tickets []models.DeliveryTicket
+
+	database.DB.Find(&tickets)
+
+	return c.JSON(tickets)
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"DB-DB/database"
 	"DB-DB/routes"
 
 	"github.com/gofiber/fiber/v2"
@@ -8,7 +9,11 @@ import (
 )
 
 func main() {
-	println("Hello, World!")
+	println("Starting database...")
+
+	database.Connect()
+
+	println("Starting API...")
 
 	app := fiber.New()
 
