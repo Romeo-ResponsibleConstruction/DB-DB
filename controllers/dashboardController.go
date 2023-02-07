@@ -4,6 +4,7 @@ import (
 	"DB-DB/database"
 	"DB-DB/models"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"gorm.io/gorm/clause"
 )
 
@@ -21,16 +22,20 @@ func AddTicket(c *fiber.Ctx) error {
 
 	c.Accepts("application/json")
 
-	// TODO assign id programatically, rather than requiring it in the json input!
-
 	// parse json
-	ticket := new(models.DeliveryTicket)
-	if err := c.BodyParser(&ticket); err != nil {
+	data := new(models.JSONDeliveryTicket)
+	if err := c.BodyParser(&data); err != nil {
 		c.Status(fiber.StatusBadRequest)
 		return c.JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
+
+	// get id
+	id := uuid.New().String()
+
+	// create ticket
+	ticket := models.DeliveryTicket{Id: id, Weight: data.Weight}
 
 	// store ticket to database
 	result := database.DB.Clauses(clause.OnConflict{DoNothing: true}).Create(&ticket)
