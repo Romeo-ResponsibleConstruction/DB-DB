@@ -7,4 +7,5 @@ import (
 
 func Setup(app *fiber.App) {
 	app.Get("/", controllers.GetDashboard)
+	app.Post("/newTicket", controllers.AddTicket)
 }
