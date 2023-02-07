@@ -21,16 +21,20 @@ func AddTicket(c *fiber.Ctx) error {
 
 	c.Accepts("application/json")
 
-	// TODO assign id programatically, rather than requiring it in the json input!
-
 	// parse json
-	ticket := new(models.DeliveryTicket)
-	if err := c.BodyParser(&ticket); err != nil {
+	data := new(models.JSONDeliveryTicket)
+	if err := c.BodyParser(&data); err != nil {
 		c.Status(fiber.StatusBadRequest)
 		return c.JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
+
+	// get id
+	id := 10
+
+	// create ticket
+	ticket := models.DeliveryTicket{Id: uint(id), Weight: data.Weight}
 
 	// store ticket to database
 	result := database.DB.Clauses(clause.OnConflict{DoNothing: true}).Create(&ticket)
