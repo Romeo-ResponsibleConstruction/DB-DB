@@ -4,6 +4,7 @@ import (
 	"DB-DB/database"
 	"DB-DB/models"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"gorm.io/gorm/clause"
 )
 
@@ -31,10 +32,10 @@ func AddTicket(c *fiber.Ctx) error {
 	}
 
 	// get id
-	id := 10
+	id := uuid.New().String()
 
 	// create ticket
-	ticket := models.DeliveryTicket{Id: uint(id), Weight: data.Weight}
+	ticket := models.DeliveryTicket{Id: id, Weight: data.Weight}
 
 	// store ticket to database
 	result := database.DB.Clauses(clause.OnConflict{DoNothing: true}).Create(&ticket)
