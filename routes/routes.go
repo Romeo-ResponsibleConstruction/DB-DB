@@ -7,5 +7,6 @@ import (
 
 func Setup(app *fiber.App) {
 	app.Get("/", controllers.GetDashboard)
+	app.Get("/img/:fp", controllers.GetPicture)
 	app.Post("/newTicket", controllers.AddTicket)
 }

@@ -16,6 +16,16 @@ func GetDashboard(c *fiber.Ctx) error {
 	return c.JSON(tickets)
 }
 
+func GetPicture(c *fiber.Ctx) error {
+	var tickets []models.DeliveryTicket
+
+	database.DB.Find(&tickets)
+
+	return c.JSON(fiber.Map{
+		"filepath": c.Params("fp"),
+	})
+}
+
 func AddTicket(c *fiber.Ctx) error {
 	// Add a new ticket entry to the database
 	// format of ticket not finalised, format of request is draft final
