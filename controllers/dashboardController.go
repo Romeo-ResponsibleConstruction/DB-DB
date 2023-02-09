@@ -9,6 +9,10 @@ import (
 )
 
 func GetDashboard(c *fiber.Ctx) error {
+	return c.SendFile("./data/index.html")
+}
+
+func GetTickets(c *fiber.Ctx) error {
 	var tickets []models.DeliveryTicket
 
 	database.DB.Find(&tickets)
@@ -17,13 +21,10 @@ func GetDashboard(c *fiber.Ctx) error {
 }
 
 func GetPicture(c *fiber.Ctx) error {
-	var tickets []models.DeliveryTicket
-
-	database.DB.Find(&tickets)
-
-	return c.JSON(fiber.Map{
-		"filepath": c.Params("fp"),
-	})
+	// return picture
+	return c.SendFile(
+		"./data/images/" + c.Params("fp"),
+	)
 }
 
 func AddTicket(c *fiber.Ctx) error {
