@@ -1,0 +1,29 @@
+<h1>Dashboard</h1>
+
+<script>
+
+    function httpGet(theUrl)
+    {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+        xmlHttp.send( null );
+        return xmlHttp.responseText;
+    }
+
+    function newData() {
+        var response = httpGet("/tickets");
+        document.getElementById("debug").innerHTML = response;
+        var tickets = JSON.parse(response);
+        document.getElementById("content").innerHTML = "";
+        tickets.forEach(ticket => {
+            document.getElementById("content").innerHTML += "<li>" + ticket.weight +
+                "<img src='/img/" + ticket.image_filepath +"' width='100' height = '100' alt='ticket image'/></li>";
+        })
+    }
+
+</script>
+
+<body onload="newData()">
+<p id="debug"></p>
+<ul id="content"></ul>
+</body>
