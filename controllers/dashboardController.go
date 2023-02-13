@@ -33,9 +33,9 @@ func AddTicket(c *fiber.Ctx) error {
 
 	c.Accepts("application/json")
 
-	// parse json
-	data := new(models.JSONDeliveryTicket)
-	if err := c.BodyParser(data); err != nil {
+	// create ticket and parse json
+	ticket := new(models.DeliveryTicket)
+	if err := c.BodyParser(ticket); err != nil {
 		c.Status(fiber.StatusBadRequest)
 		return c.JSON(fiber.Map{
 			"message": err.Error(),
@@ -45,11 +45,11 @@ func AddTicket(c *fiber.Ctx) error {
 	// get id
 	id := uuid.New().String()
 
-	// create ticket
-	ticket := models.DeliveryTicket{Id: id, Weight: data.Weight}
+	// add id to ticket
+	ticket.Id = id
 
 	// store ticket to database
-	result := database.DB.Clauses(clause.OnConflict{DoNothing: true}).Create(&ticket)
+	result := database.DB.Clauses(clause.OnConflict{DoNothing: true}).Create(ticket)
 	// nothing affected => conflict => show error
 	if result.RowsAffected == 0 {
 		c.Status(fiber.StatusForbidden)
@@ -59,6 +59,6 @@ func AddTicket(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"message": "success\n ticket was given id: " + id,
+		"message": "success, ticket was given id: " + id,
 	})
 }
