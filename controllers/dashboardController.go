@@ -35,7 +35,7 @@ func AddTicket(c *fiber.Ctx) error {
 
 	// parse json
 	data := new(models.JSONDeliveryTicket)
-	if err := c.BodyParser(&data); err != nil {
+	if err := c.BodyParser(data); err != nil {
 		c.Status(fiber.StatusBadRequest)
 		return c.JSON(fiber.Map{
 			"message": err.Error(),
@@ -59,6 +59,6 @@ func AddTicket(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"message": "success",
+		"message": "success\n ticket was given id: " + id,
 	})
 }
