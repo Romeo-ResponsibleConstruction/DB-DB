@@ -1,0 +1,5 @@
+/.idea/
+/dsn.txt
+/data/images/
+go.mod
+go.sum
