@@ -1,5 +1,10 @@
 <h1>Dashboard</h1>
+<style>
+    ul {
+        list-style: square;
+    }
 
+</style>
 <script>
 
     function httpGet(theUrl)
@@ -12,18 +17,31 @@
 
     function newData() {
         var response = httpGet("/tickets");
-        document.getElementById("debug").innerHTML = response;
+        // document.getElementById("debug").innerHTML = response;
         var tickets = JSON.parse(response);
         document.getElementById("content").innerHTML = "";
+        var totaloverall = 0;
         tickets.forEach(ticket => {
-            document.getElementById("content").innerHTML += "<li>" + ticket.weight +
-                "<img src='/img/" + ticket.image_filepath +"' width='100' height = '100' alt='ticket image'/></li>";
+            document.getElementById("content").innerHTML += "<li>total weight: " + ticket.weight + " kg" +
+                "<br><a href='/img/" + ticket.image_filepath + "'>view image</a>" +
+                "<br><img src='/img/" + ticket.image_filepath +"' width='150' height = '150' alt='ticket image'/></li>";
+            totaloverall += ticket.weight;
         })
+        document.getElementById(("totaltotal")).innerText = "Overall total weight: " + totaloverall + " kg";
+    }
+
+    function reload() {
+        document.getElementById("autoreload").hidden = true;
+        newData();
+        setTimeout(reload, 3000); // refresh data automatically every 5 seconds
     }
 
 </script>
 
 <body onload="newData()">
 <p id="debug"></p>
+<h3 id="totaltotal"></h3>
+<h4>Individual Delivery Tickets:</h4>
 <ul id="content"></ul>
+<button onclick="reload()" id="autoreload">start auto-reload</button>
 </body>
