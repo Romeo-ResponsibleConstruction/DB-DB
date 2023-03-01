@@ -2,8 +2,10 @@ package database
 
 import (
 	"DB-DB/models"
+	"bytes"
 	"io"
 	"os"
+	"strings"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -31,7 +33,8 @@ func Connect() {
 		}
 	}
 	// buffer -> string
-	databaseSettings := string(buf)
+	buf = bytes.Trim(buf, "\x00")
+	databaseSettings := strings.TrimSpace(string(buf))
 	// close fi on exit and check for its returned error
 	defer func() {
 		if err := fi.Close(); err != nil {
