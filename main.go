@@ -23,7 +23,7 @@ func main() {
 
 	routes.Setup(app)
 
-	err := app.Listen("127.0.0.1:8000")
+	err := app.Listen(":8000")
 	if err != nil {
 		println(err) // simple error handling
 		return
