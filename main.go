@@ -56,7 +56,7 @@ func main() {
 
 	err = app.Listen(dashboardAddress)
 	if err != nil {
-		println(err) // simple error handling
+		println(err.Error()) // simple error handling
 		return
 	}
 }
