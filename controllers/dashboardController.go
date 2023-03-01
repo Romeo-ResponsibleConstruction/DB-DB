@@ -11,6 +11,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 func GetDashboard(c *fiber.Ctx) error {
@@ -49,8 +50,19 @@ func AddTicket(c *fiber.Ctx) error {
 
 	ticket := new(models.DeliveryTicket)
 
-	if data.Success {
-		ticket.Weight = data.Weight.Value
+	for _, field := range data.ExtractedFields {
+		if field == "total weight" {
+			fieldData := data.TotalWeight
+			if fieldData.Success {
+				float, err := strconv.ParseFloat(fieldData.Value, 32)
+				if err != nil {
+					return c.JSON(fiber.Map{
+						"message": err.Error(),
+					})
+				}
+				ticket.Weight = float32(float)
+			}
+		}
 	}
 
 	// get id
