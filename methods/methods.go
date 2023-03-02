@@ -3,6 +3,7 @@ package methods
 import (
 	"bytes"
 	"io"
+	"math"
 	"os"
 	"strings"
 )
@@ -34,5 +35,11 @@ func StringFromFile(filename string) (data string) {
 			panic(err)
 		}
 	}()
+	return
+}
+
+func RoundWithPrecision(value float64, precision int) (result float64) {
+	factor := math.Pow10(precision)
+	result = math.Round(value*factor) / factor
 	return
 }

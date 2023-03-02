@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"DB-DB/database"
+	"DB-DB/methods"
 	"DB-DB/models"
 	"errors"
 	"fmt"
@@ -54,13 +55,13 @@ func AddTicket(c *fiber.Ctx) error {
 		if field == "total weight" {
 			fieldData := data.TotalWeight
 			if fieldData.Success {
-				float, err := strconv.ParseFloat(fieldData.Value, 32)
+				float, err := strconv.ParseFloat(fieldData.Value, 64)
 				if err != nil {
 					return c.JSON(fiber.Map{
 						"message": err.Error(),
 					})
 				}
-				ticket.Weight = float32(float)
+				ticket.Weight = methods.RoundWithPrecision(float, 3)
 			}
 		}
 	}
