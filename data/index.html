@@ -21,12 +21,15 @@
         var tickets = JSON.parse(response);
         document.getElementById("content").innerHTML = "";
         var totaloverall = 0;
+        var count = 0;
         tickets.forEach(ticket => {
             document.getElementById("content").innerHTML += "<li>total weight: " + ticket.weight + " kg" +
                 "<br><a href='/img/" + ticket.image_filepath + "'>view image</a>" +
                 "<br><img src='/img/" + ticket.image_filepath +"' width='150' height = '150' alt='ticket image'/></li>";
             totaloverall += ticket.weight;
+            count++;
         })
+        document.getElementById(("totaltickets")).innerText = "System has stored a total of " + count + " tickets";
         document.getElementById(("totaltotal")).innerText = "Overall total weight: " + totaloverall + " kg";
     }
 
@@ -40,6 +43,7 @@
 
 <body onload="newData()">
 <p id="debug"></p>
+<h3 id="totaltickets"></h3>
 <h3 id="totaltotal"></h3>
 <h4>Individual Delivery Tickets:</h4>
 <ul id="content"></ul>
