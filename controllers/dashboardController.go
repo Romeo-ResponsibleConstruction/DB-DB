@@ -33,7 +33,7 @@ func GetTickets(c *fiber.Ctx) error {
 		// tickets and files are both already sorted by uuid
 		ticketIndex := 0
 		for _, file := range files {
-			if ticketIndex < len(tickets) && tickets[ticketIndex].Id+".jpg" == file.Name() {
+			if ticketIndex < len(tickets) && tickets[ticketIndex].ImageFilepath == file.Name() {
 				ticketIndex++
 			} else { //file not referenced, can delete
 				_ = deleteImage(file.Name())
