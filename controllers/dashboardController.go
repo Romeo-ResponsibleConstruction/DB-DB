@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm/clause"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -23,6 +24,22 @@ func GetTickets(c *fiber.Ctx) error {
 	var tickets []models.DeliveryTicket
 
 	database.DB.Find(&tickets)
+
+	files, err := os.ReadDir("./data/images")
+	if err != nil {
+		log.Print(err)
+	}
+	if len(tickets) != len(files) { // too many files, need to do some cleanup
+		// tickets and files are both already sorted by uuid
+		ticketIndex := 0
+		for _, file := range files {
+			if ticketIndex < len(tickets) && tickets[ticketIndex].Id+".jpg" == file.Name() {
+				ticketIndex++
+			} else { //file not referenced, can delete
+				_ = deleteImage(file.Name())
+			}
+		}
+	}
 
 	return c.JSON(tickets)
 }
@@ -96,6 +113,13 @@ func AddTicket(c *fiber.Ctx) error {
 
 }
 
+func DeleteTicket(c *fiber.Ctx) error {
+	database.DB.Where("id = ?", c.Params("id")).Delete(&models.DeliveryTicket{})
+	return c.JSON(fiber.Map{
+		"message": "ticket " + c.Params("id") + " deleted",
+	})
+}
+
 func downloadImage(url, filename string) error {
 	response, err := http.Get(url)
 	if err != nil {
@@ -116,6 +140,15 @@ func downloadImage(url, filename string) error {
 	}(file)
 
 	_, err = io.Copy(file, response.Body)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func deleteImage(filename string) error {
+	err := os.Remove(fmt.Sprintf("./data/images/%s", filename))
 	if err != nil {
 		return err
 	}

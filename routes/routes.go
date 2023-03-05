@@ -10,4 +10,5 @@ func Setup(app *fiber.App) {
 	app.Get("/tickets", controllers.GetTickets)
 	app.Get("/img/:fp", controllers.GetPicture)
 	app.Post("/newTicket", controllers.AddTicket)
+	app.Delete("/deleteTicket/:id", controllers.DeleteTicket)
 }

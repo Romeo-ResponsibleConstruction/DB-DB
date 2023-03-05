@@ -1,7 +1,7 @@
 package models
 
 type DeliveryTicket struct {
-	Id            string  `json:"id" gorm:"not null,unique"`
+	Id            string  `json:"id" gorm:"primaryKey,not null,unique"`
 	Weight        float64 `json:"weight" gorm:"type:decimal(16,3)"` // Total weight of the delivery
 	Volume        float64 `json:"volume"`
 	Date          string  `json:"date"`
