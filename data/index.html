@@ -7,12 +7,18 @@
 </style>
 <script>
 
-    function httpGet(theUrl)
-    {
+    function httpGet(theUrl) {
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
         xmlHttp.send( null );
         return xmlHttp.responseText;
+    }
+
+    function httpDelete(uuid) {
+        console.log("Deleting ticket " + uuid)
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "DELETE", "deleteTicket/" + uuid, false );
+        xmlHttp.send( null );
     }
 
     function newData() {
@@ -21,12 +27,16 @@
         var tickets = JSON.parse(response);
         document.getElementById("content").innerHTML = "";
         var totaloverall = 0;
+        var count = 0;
         tickets.forEach(ticket => {
             document.getElementById("content").innerHTML += "<li>total weight: " + ticket.weight + " kg" +
                 "<br><a href='/img/" + ticket.image_filepath + "'>view image</a>" +
+                '<br><button onclick="httpDelete(\''+ticket.id+'\')">Delete this ticket</button>' +
                 "<br><img src='/img/" + ticket.image_filepath +"' width='150' height = '150' alt='ticket image'/></li>";
             totaloverall += ticket.weight;
+            count++;
         })
+        document.getElementById(("totaltickets")).innerText = "System has stored a total of " + count + " tickets";
         document.getElementById(("totaltotal")).innerText = "Overall total weight: " + totaloverall + " kg";
     }
 
@@ -36,11 +46,21 @@
         setTimeout(reload, 3000); // refresh data automatically every 5 seconds
     }
 
+    function deleteall() {
+        var response = httpGet("/tickets");
+        var tickets = JSON.parse(response);
+        tickets.forEach(ticket => {
+            httpDelete(ticket.id)
+        })
+    }
+
 </script>
 
 <body onload="newData()">
 <p id="debug"></p>
+<h3 id="totaltickets"></h3>
 <h3 id="totaltotal"></h3>
+<button onclick="deleteall()" id="deleteall">DELETE ALL TICKETS</button>
 <h4>Individual Delivery Tickets:</h4>
 <ul id="content"></ul>
 <button onclick="reload()" id="autoreload">start auto-reload</button>
