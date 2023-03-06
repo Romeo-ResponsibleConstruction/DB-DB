@@ -51,6 +51,16 @@ func GetPicture(c *fiber.Ctx) error {
 	)
 }
 
+func GetFailedChecks(c *fiber.Ctx) error {
+	var checks []string
+
+	database.DB.Model(&models.FailedChecks{}).
+		Where("ticket_id = ? AND quantity = ?", c.Params("id"), c.Params("quantity")).
+		Select("check_name").Find(&checks)
+
+	return c.JSON(checks)
+}
+
 func AddTicket(c *fiber.Ctx) error {
 	// Add a new ticket entry to the database
 	// format of ticket not finalised, format of request is draft final
@@ -66,11 +76,15 @@ func AddTicket(c *fiber.Ctx) error {
 		})
 	}
 
+	// get id
+	id := uuid.New().String()
+
 	ticket := new(models.DeliveryTicket)
 
 	for _, field := range data.ExtractedFields {
 		if field == "total weight" {
 			fieldData := data.TotalWeight
+			ticket.WeightSuccess = fieldData.Success
 			if fieldData.Success {
 				float, err := strconv.ParseFloat(fieldData.Value, 64)
 				if err != nil {
@@ -79,12 +93,44 @@ func AddTicket(c *fiber.Ctx) error {
 					})
 				}
 				ticket.Weight = methods.RoundWithPrecision(float, 3)
+
+				if !fieldData.Checks.DecimalPlaceCheck {
+					check := new(models.FailedChecks)
+					check.Id = id + "-DPC"
+					check.TicketId = id
+					check.Quantity = "weight"
+					check.CheckName = "Decimal Place Check"
+					result := database.DB.Clauses(clause.OnConflict{DoNothing: true}).Create(check)
+					// nothing affected => conflict => show error
+					if result.RowsAffected == 0 {
+						c.Status(fiber.StatusForbidden)
+						return c.JSON(fiber.Map{
+							"message": "could not add check",
+						})
+					}
+				}
+
+				if !fieldData.Checks.ExtremeValueCheck {
+					check := new(models.FailedChecks)
+					check.Id = id + "-EVC"
+					check.TicketId = id
+					check.Quantity = "weight"
+					check.CheckName = "Extreme Value Check"
+					result := database.DB.Clauses(clause.OnConflict{DoNothing: true}).Create(check)
+					// nothing affected => conflict => show error
+					if result.RowsAffected == 0 {
+						c.Status(fiber.StatusForbidden)
+						return c.JSON(fiber.Map{
+							"message": "could not add check",
+						})
+					}
+				}
+			} else {
+				ticket.WeightErrorType = fieldData.ErrorInformation.Type
+				ticket.WeightErrorDescription = fieldData.ErrorInformation.Description
 			}
 		}
 	}
-
-	// get id
-	id := uuid.New().String()
 
 	// add id to ticket
 	ticket.Id = id
@@ -115,6 +161,7 @@ func AddTicket(c *fiber.Ctx) error {
 
 func DeleteTicket(c *fiber.Ctx) error {
 	database.DB.Where("id = ?", c.Params("id")).Delete(&models.DeliveryTicket{})
+	database.DB.Where("ticket_id = ?", c.Params("id")).Delete(&models.FailedChecks{})
 	return c.JSON(fiber.Map{
 		"message": "ticket " + c.Params("id") + " deleted",
 	})
