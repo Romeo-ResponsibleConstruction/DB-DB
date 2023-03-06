@@ -19,6 +19,7 @@ func Connect() {
 
 	DB = connection
 
-	DB.AutoMigrate(&models.DeliveryTicket{})     // automatically make sure that the tables in the DB are correct
-	DB.AutoMigrate(&models.DeliveryTicketItem{}) // automatically make sure that the tables in the DB are correct
+	DB.AutoMigrate(&models.DeliveryTicket{}) // automatically make sure that the tables in the DB are correct
+	DB.AutoMigrate(&models.FailedChecks{})   // automatically make sure that the tables in the DB are correct
+	//DB.AutoMigrate(&models.DeliveryTicketItem{}) // automatically make sure that the tables in the DB are correct
 }
