@@ -29,7 +29,11 @@
         var totaloverall = 0;
         var count = 0;
         tickets.forEach(ticket => {
+            var weightChecks = JSON.parse(httpGet("/failedchecks/"+ticket.id+"/weight"))
+            var weightCheckResponse = weightChecks.length === 0 ? "" : "<br>Weight extraction from this ticket failed the following sanity checks: " + weightChecks.join(", ")
             document.getElementById("content").innerHTML += "<li>total weight: " + ticket.weight + " kg" +
+                (ticket.weight_success ? "" : "<br>Weight extraction failed due to: " + ticket.weight_error_description) +
+                weightCheckResponse +
                 "<br><a href='/img/" + ticket.image_filepath + "'>view image</a>" +
                 '<br><button onclick="httpDelete(\''+ticket.id+'\')">Delete this ticket</button>' +
                 "<br><img src='/img/" + ticket.image_filepath +"' width='150' height = '150' alt='ticket image'/></li>";
