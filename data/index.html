@@ -37,7 +37,7 @@
             count++;
         })
         document.getElementById(("totaltickets")).innerText = "System has stored a total of " + count + " tickets";
-        document.getElementById(("totaltotal")).innerText = "Overall total weight: " + totaloverall + " kg";
+        document.getElementById(("totaltotal")).innerText = "Overall total weight: " + totaloverall.toFixed(3) + " kg";
     }
 
     function reload() {
